@@ -23,14 +23,13 @@
 var CSRankings = /** @class */ (function () {
     function CSRankings() {
         var _this = this;
-        this.authorFile = "/csrankings.csv"; //读取姓名、工作单位、个人主页、scholar的id 13121位老师
-        this.authorinfoFile = "/generated-author-info.csv";// 读取作者信息 姓名、部门、地区等 共91943条
-        this.countryinfoFile = "/country-info.csv"; //读取机构、区域 7个区域184机构
-        this.aliasFile = "/dblp-aliases.csv"; //读取别名，姓名 共32540条
-        this.turingFile = "./turing.csv";// 读取图灵奖名单，姓名，年份 共78人
+        this.authorFile = "/csrankings.csv";
+        this.authorinfoFile = "/generated-author-info.csv";
+        this.countryinfoFile = "/country-info.csv";
+        this.aliasFile = "/dblp-aliases.csv";
+        this.turingFile = "./turing.csv";
         this.homepageImage = "/house-logo.png";
         this.allowRankingChange = false; /* Can we change the kind of rankings being used? */
-        //2018年05月17日14:19:19 当前101个会议 26个title
         this.areaMap = [{ area: "ai", title: "AI" },
             { area: "aaai", title: "AI" },
             { area: "ijcai", title: "AI" },
@@ -68,13 +67,6 @@ var CSRankings = /** @class */ (function () {
             { area: "vldb", title: "DB" },
             { area: "icde", title: "DB" },
             { area: "pods", title: "DB" },
-            { area: "da", title: "EDA" },
-            { area: "dac", title: "EDA" },
-            { area: "iccad", title: "EDA" },
-            { area: "bed", title: "Embedded" },
-            { area: "emsoft", title: "Embedded" },
-            { area: "rtas", title: "Embedded" },
-            { area: "rtss", title: "Embedded" },
             { area: "hpc", title: "HPC" },
             { area: "sc", title: "HPC" },
             { area: "hpdc", title: "HPC" },
@@ -112,15 +104,9 @@ var CSRankings = /** @class */ (function () {
             { area: "log", title: "Logic" },
             { area: "cav", title: "Logic" },
             { area: "lics", title: "Logic" },
-            { area: "bio", title: "Comp. Bio" },
-            { area: "ismb", title: "Comp. Bio" },
-            { area: "recomb", title: "Comp. Bio" },
             { area: "graph", title: "Graphics" },
             { area: "siggraph", title: "Graphics" },
             { area: "siggraph-asia", title: "Graphics" },
-            { area: "ecom", title: "ECom" },
-            { area: "ec", title: "ECom" },
-            { area: "wine", title: "ECom" }
             { area: "chi", title: "HCI" },
             { area: "chiconf", title: "HCI" },
             { area: "ubicomp", title: "HCI" },
@@ -129,13 +115,24 @@ var CSRankings = /** @class */ (function () {
             { area: "icra", title: "Robotics" },
             { area: "iros", title: "Robotics" },
             { area: "rss", title: "Robotics" },
+            { area: "bio", title: "Comp. Bio" },
+            { area: "ismb", title: "Comp. Bio" },
+            { area: "recomb", title: "Comp. Bio" },
+            { area: "da", title: "EDA" },
+            { area: "dac", title: "EDA" },
+            { area: "iccad", title: "EDA" },
+            { area: "bed", title: "Embedded" },
+            { area: "emsoft", title: "Embedded" },
+            { area: "rtas", title: "Embedded" },
+            { area: "rtss", title: "Embedded" },
             { area: "visualization", title: "Visualization" },
             { area: "vis", title: "Visualization" },
             { area: "vr", title: "Visualization" },
-
+            { area: "ecom", title: "ECom" },
+            { area: "ec", title: "ECom" },
+            { area: "wine", title: "ECom" }
             //,{ area : "cse", title : "CSEd" }
         ];
-        // 4大领域: AI System Theory Interdisciplinary
         this.aiAreas = ["ai", "vision", "mlmining", "nlp", "ir"];
         this.systemsAreas = ["arch", "comm", "sec", "mod", "hpc", "mobile", "metrics", "ops", "plan", "soft", "da", "bed"];
         this.theoryAreas = ["act", "crypt", "log"];
@@ -146,41 +143,29 @@ var CSRankings = /** @class */ (function () {
         this.systemsFields = [];
         this.theoryFields = [];
         this.otherFields = [];
-
         /* Map area to its name (from areaNames). */
         this.areaDict = {};
-
         /* Map area to its position in the list. */
         this.areaPosition = {};
-
         /* Map names to Google Scholar IDs. */
         this.scholarInfo = {};
-
         /* Map aliases to canonical author name. */
         this.aliases = {};
-
         /* Map Turing award winners to year */
         this.turing = {};
-
         /* Map institution to (non-US) region. */
         this.countryInfo = {};
-
         /* Map name to home page. */
         this.homepages = {};
-
         /* Set to true for "dense rankings" vs. "competition rankings". */
         this.useDenseRankings = false;
-
         /* The data which will hold the parsed CSV of author info. */
         this.authors = [];
-
         /* Map authors to the areas they have published in (for pie chart display). */
         this.authorAreas = {};
-
         /* Computed stats (univagg). */
         this.stats = {};
         this.areaDeptAdjustedCount = {}; /* area+dept */
-
         /* Colors for all areas. */
         this.color = ["#f30000", "#0600f3", "#00b109", "#14e4b4", "#0fe7fb", "#67f200", "#ff7e00", "#8fe4fa", "#ff5300", "#640000", "#3854d1", "#d00ed8", "#7890ff", "#01664d", "#04231b", "#e9f117", "#f3228e", "#7ce8ca", "#ff5300", "#ff5300", "#7eff30", "#9a8cf6", "#79aff9", "#bfbfbf", "#56b510", "#00e2f6", "#ff4141", "#61ff41"];
         this.RightTriangle = "&#9658;"; // right-facing triangle symbol (collapsed view)
@@ -519,7 +504,6 @@ var CSRankings = /** @class */ (function () {
             }
         });
     };
-    // 这里是入口 根据页面显示的Loading alias data.得到
     CSRankings.prototype.displayProgress = function (step) {
         var msgs = ["Loading alias data.",
             "Loading author information.",
